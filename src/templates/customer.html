@@ -1,0 +1,153 @@
+{% extends "layout.html" %}
+{% block styles %}
+{% endblock %}
+{% block content %}
+
+<table id="grid" class="table table-striped table-bordered">
+</table>
+<div id="pager"></div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+  "use strict";
+  var customers = [];
+  $("#grid").jqGrid({
+    url: '/api/customers',
+    editurl: '/api/customer/edit',
+    datatype: "json",
+    mtype: 'GET',
+    colModel: [
+      {
+        name: 'id',
+        index: 'id',
+        key: true,
+        hidden: true
+      },
+      { label: 'Frist Name', name: 'firstName', width: 150, editable: true, editrules: { required: true }, editoptions: { dataEvents: [createAutoCorrectEvent()] } },
+      { label: 'Last Name', name: 'lastName', width: 150, editable: true, editrules: { required: true }, editoptions: { dataEvents: [createAutoCorrectEvent()] } },
+      { label: 'Email', name: 'email', width: 100, editable: true, editrules: { required: true }, editoptions: { dataEvents: [createAutoCorrectMailEvent()] } },
+      { label: 'Mobile', name: 'mobile', width: 100, editable: true },
+      { label: 'Date created', name: 'created_at', width: 100, editable: false, align: 'center', formatter: 'date' },
+      { label: 'Date updated', name: 'updated_at', width: 100, editable: false, align: 'center', formatter: 'date' }
+    ],
+    searching: {
+      searchOnEnter: true,
+      defaultSearch: "bw"
+    },
+    loadonce: true,
+    rownumbers: true,
+    viewrecords: true,
+    height: 250,
+    rowNum: 100,
+    pager: "#pager",
+    caption: "Customers Registration",
+    autowidth: true,
+
+    loadComplete: function (data) {
+      customers = data;
+      const response = fetch('/api/userRoles', {
+        headers: {
+          'Accept': 'application/json'
+        }
+      }).then(resp => {
+        let data = resp.json()
+
+        $("#grid").navGrid("#pager", {
+          edit: data.isAdminRole,
+          add: data.isAdminRole,
+          del: false,
+          search: true,
+          refresh: true,
+          view: true,
+          position: "left",
+          cloneToTop: true
+        },
+          {
+            // edit options
+            url: '/api/customer/edit',
+            closeAfterEdit: true,
+            reloadAfterSubmit: true,
+            errorTextFormat: function (response) {
+              const json = JSON.parse(response.responseText);
+              return json.message || "An error occurred";
+            },
+            afterSubmit: function (response, postdata) {
+              window.location.reload()
+            }
+          },
+          {
+            // Add options
+            url: '/api/customer/new',
+            closeAfterAdd: true,
+            reloadAfterSubmit: true,
+            errorTextFormat: function (response) {
+              const json = JSON.parse(response.responseText);
+              return json.message || "An error occurred";
+            },
+            afterSubmit: function (response, postdata) {
+              window.location.reload()
+            }
+          }
+        );
+
+      });
+
+    }
+  });
+  function createAutoCorrectMailEvent() {
+    return {
+      type: 'blur',
+      fn: function (e) {
+        const input = $(e.target);
+        const mail = input.val();
+        Mailcheck.run({
+          email: mail,
+          suggested: function (suggestion) {
+            input.val(suggestion.full);
+          }
+        });
+      }
+    };
+  }
+
+  function createAutoCorrectEvent() {
+    return {
+      type: 'blur',
+      fn: function (e) {
+        const input = $(e.target);
+        const original = input.val();
+        checkGrammar(original).then(result => {
+          if (result.length > 0) {
+            const suggestion = result[0].value;
+            input.val(suggestion);
+          }
+        });
+      }
+    };
+  }
+
+  async function checkGrammar(text) {
+    const res = await fetch("https://api.languagetool.org/v2/check", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({
+        text: text,
+        language: "en-US"
+      })
+    });
+
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    const data = await res.json();
+    if (data.matches.length > 0)
+      return data.matches[0].replacements;
+
+    return []
+  }
+</script>
+{% endblock %}
