@@ -35,6 +35,7 @@
       ```bash
       
        cd METICULY/src
+       . .venv/bin/activate
        flask seed
 
  - come back to your browser you should be able to login with
