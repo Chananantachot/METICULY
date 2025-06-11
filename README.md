@@ -17,9 +17,7 @@
   - Spelling checking & Auto correct Email REST API (External)
 
 ## 🚀 Getting Started
--
-       ```bash
-       
+
          git clone https://github.com/Chananantachot/METICULY.git 
          cd METICULY/src
          git checkout -b master
