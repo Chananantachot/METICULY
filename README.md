@@ -18,13 +18,19 @@
 
 ## 🚀 Getting Started
     ```bash
-       git clone https://github.com/Chananantachot/METICULY.git
-       cd METICULY/src
-       git checkout -b master
-       python3 -m venv .venv
-       . .venv/bin/activate
-       pip3 install -r requirement.txt
-       ./start.sh
+         git clone https://github.com/Chananantachot/METICULY.git
+         
+         cd METICULY/src
+         
+         git checkout -b master
+         
+         python3 -m venv .venv
+         
+         . .venv/bin/activate
+         
+         pip3 install -r requirement.txt
+         
+         ./start.sh
      
   - One you seen 127.0.0.1:5000/ in your terminal/powershall 
     ```bash
