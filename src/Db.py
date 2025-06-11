@@ -184,11 +184,12 @@ class Db:
                         WHERE email = ?
                         AND active = 1''',(email,))
         user = cursor.fetchone()
-        roles = Db.getUserRoles(user['id'])
-        
-        user = dict(user)
-        _roles = [dict(r) for r in roles]
-        user['roles'] = [r['roleName'] for r in _roles]
+        if user:
+            roles = Db.getUserRoles(user['id'])
+            
+            user = dict(user)
+            _roles = [dict(r) for r in roles]
+            user['roles'] = [r['roleName'] for r in _roles]
         return user
 
     @staticmethod
