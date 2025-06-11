@@ -4,17 +4,17 @@
 - Register/Activate new user
 - User login/logout
 - Users & Roles Management  (available for only Admin roles)
-- Customers Register (available for only Admin roles) otherwise READ-ONLY
-  - Supported the unige customer FirstName and LastName
+- Customers Register (Create/Update only available for Admin role users).
+  - Supported the uniqe customer FirstName and LastName
   - Supported auto correct word spelling (Fistname, Lastname and Email) 
 
 
 ## 🧰 Tech Stack
   - Python3/Flask (Buleprint) Frameworks REST API
-  - JWT Authorization (Stored token in cookies, Token lifetime only 30 mins + refresh Token 30 mins)
-  - JAVASCRIPT, JQuery, JgGrid (for fontend UI GRID)
-  - Sqlite3
-  - Spelling checking & Auto correct Email REST API (External)
+  - JWT Authorization (stored Token in cookies, Token & Cookies lifetimes will be 30 mins + Refresh Token 30 mins) after an hour user will need to re-login.
+  - CSS,JAVASCRIPT, JQuery, JqGrid (for fontend UI GRID)
+  - Sqlite3 (local database)
+  - Intergated spelling checking & auto correct email via external REST API 
 
 ## 🚀 Getting Started
 
