@@ -32,13 +32,15 @@
          
          ./start.sh
      
-  - One you seen 127.0.0.1:5000/ in your terminal/powershall 
+  - One you seen 127.0.0.1:5000/ in your terminal/powershall
+  - Visit the site by https:// 127.0.0.1:5000/
+  - then open your new Terminal, the following instructions 
     ```bash
+       cd METICULY/src
        flask seed
 
- - visit the site by https:// 127.0.0.1:5000/
- - login with
-     user name: admin@gmail.com
-     password:  @dmin!23456
+ - come back to your browser you should be able to login with
+    -- user name: admin@gmail.com
+    -- password:  @dmin!23456
       
   
