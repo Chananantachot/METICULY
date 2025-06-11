@@ -74,7 +74,10 @@
               return json.message || "An error occurred";
             },
             afterSubmit: function (response, postdata) {
-              window.location.reload()
+              var $self = $(this), p = $self.jqGrid("getGridParam");
+              p.datatype = "json";
+              $self.trigger("reloadGrid", { page: p.page, current: true });
+              return [true, '']; // no error
             }
           },
           {
@@ -87,7 +90,10 @@
               return json.message || "An error occurred";
             },
             afterSubmit: function (response, postdata) {
-              window.location.reload()
+               var $self = $(this), p = $self.jqGrid("getGridParam");
+                p.datatype = "json";
+                $self.trigger("reloadGrid", { page: p.page, current: true });
+                return [true, '']; // no error
             }
           }
         );

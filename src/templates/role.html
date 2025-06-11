@@ -87,11 +87,11 @@
         position: "last",
         onClickButton: function () {
           var ids = $("#" + subgrid_table_id).jqGrid('getGridParam', 'selarrrow');
-          $.post('/api/roles/' + id + '/assignment', {
+            $.post('/api/roles/' + id + '/assignment', {
             user_ids: ids
-          }, function () {
-            $("#" + subgrid_table_id).remove();
-          })
+            }, function () {
+            $("#" + subgrid_table_id).trigger("reloadGrid");
+            });
         }
       });
     },
