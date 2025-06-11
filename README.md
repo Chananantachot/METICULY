@@ -17,8 +17,10 @@
   - Spelling checking & Auto correct Email REST API (External)
 
 ## 🚀 Getting Started
-    ```bash
-         git clone https://github.com/Chananantachot/METICULY.git
+-
+       ```bash
+          
+          git clone https://github.com/Chananantachot/METICULY.git
          
          cd METICULY/src
          
@@ -31,16 +33,17 @@
          pip3 install -r requirement.txt
          
          ./start.sh
-     
+
   - One you seen 127.0.0.1:5000/ in your terminal/powershall
-  - Visit the site by https:// 127.0.0.1:5000/
-  - then open your new Terminal, the following instructions 
-    ```bash
+  - Visit the site at https:// 127.0.0.1:5000/
+  - then open your new Terminal, then following instructions
+  - 
+      ```bash
        cd METICULY/src
        flask seed
 
  - come back to your browser you should be able to login with
-    -- user name: admin@gmail.com
-    -- password:  @dmin!23456
+     user name: admin@gmail.com
+     password:  @dmin!23456
       
   
