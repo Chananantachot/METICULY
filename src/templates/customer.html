@@ -50,19 +50,20 @@
         headers: {
           'Accept': 'application/json'
         }
-      }).then(resp => {
-        let data = resp.json()
-
-        $("#grid").navGrid("#pager", {
-          edit: data.isAdminRole,
-          add: data.isAdminRole,
-          del: false,
-          search: true,
-          refresh: true,
-          view: true,
-          position: "left",
-          cloneToTop: true
-        },
+      }).then(resp => resp.json()
+      ).then(data => {
+        console.log(data.isAdminRole)
+        $("#grid").navGrid("#pager", 
+          {
+            edit: data.isAdminRole,
+            add: data.isAdminRole,
+            del: false,
+            search: true,
+            refresh: true,
+            view: true,
+            position: "left",
+            cloneToTop: true
+          },
           {
             // edit options
             url: '/api/customer/edit',
@@ -90,9 +91,7 @@
             }
           }
         );
-
-      });
-
+      })   
     }
   });
   function createAutoCorrectMailEvent() {

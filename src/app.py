@@ -1,5 +1,4 @@
 import os
-import secrets
 from dotenv import load_dotenv
 from decorators import role_required
 
@@ -18,7 +17,8 @@ from flask_jwt_extended import (
     get_jwt_identity, unset_jwt_cookies, verify_jwt_in_request
 )
 
-from werkzeug.security import generate_password_hash
+from flask.cli import with_appcontext
+import click
 
 from datetime import timedelta
 
@@ -39,6 +39,20 @@ app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(minutes=30)
 app.config['JWT_COOKIE_CSRF_PROTECT'] = False 
 jwt = JWTManager(app)
 
+@click.command(name='seed')
+@with_appcontext
+def seed():
+    Db.seedAccount()
+    Db.SeedCustomers()
+    print("Database seeded!")
+ 
+
+def register_commands(app):
+    app.cli.add_command(seed)
+
+# Call this in your create_app()
+register_commands(app)
+
 @app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
@@ -48,7 +62,6 @@ def close_connection(exception):
 @app.before_request
 def before_request():
     Db.init_db()
-    seedAccount()
     if request.endpoint in ['user', 'roles','users.newUser','users.register', 'users.signin','login','users.activateUser','static']:
         return
     try:
@@ -60,7 +73,7 @@ def before_request():
 @jwt_required()
 def customer():
     current_user = get_jwt_identity() 
-    roles = get_jwt()["roles"]  
+    roles = get_jwt()["roles"] or [] 
     isAdminRole = 'Admin' in roles
     user = {
         'name': current_user,
@@ -145,36 +158,6 @@ def missing_token_callback(err):
     response = make_response(redirect(request.args.get("next") or url_for("homepage")))
     unset_jwt_cookies(response)
     return response, 401
-
-def seedAccount():
-    roleId = seedRole()
-
-    users = Db.getCurrentUsers()
-    if not users:
-        fullname = 'Administrator'
-        email = 'admin@gmail.com'
-        password = os.getenv("ADMIN_PASSWORD")
-    
-        user = Db.getCurrentUser(email)
-        if not user:
-            salt = secrets.token_urlsafe(16)
-            hashed_password = generate_password_hash(password + salt)
-            userid = Db.createUser(fullname,email,salt,hashed_password)
-            if userid:
-                Db.activeUser(userid)
-                if roleId:
-                    Db.addUserInRoles(roleId,userid) 
-
-def seedRole():
-    id = None
-    roles = Db.getRoles()
-    if not roles:
-        roleName = 'Admin' 
-        description = 'An administrator role.'
-        active = 1
-        id = Db.createRole(roleName,description,active) 
-    return id     
-
 
 if __name__ == '__main__':
    app.run(ssl_context="adhoc", host='0.0.0.0' , port=5000)  # Use SSL context for HTTPS

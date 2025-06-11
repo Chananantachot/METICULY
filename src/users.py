@@ -31,7 +31,7 @@ def signin():
 
     if not email or not password:
         # Redirect to login with error
-        response = redirect(url_for("users.login", error="Invalid username or password!"))
+        response = redirect(url_for("login", error="Invalid username or password!"))
         response = make_response(response)
         unset_jwt_cookies(response)
         return response
@@ -39,7 +39,7 @@ def signin():
     user = Db.getCurrentActiveUser(email)
     if not user or not check_password_hash(user['password'], password + user['salt']):
         # Login failed — clear any old tokens and redirect with error
-        response = redirect(url_for("users.login", error="Invalid username or password!"))
+        response = redirect(url_for("login", error="Invalid username or password!"))
         response = make_response(response)
         unset_jwt_cookies(response)
         return response
@@ -90,7 +90,7 @@ def activateUser():
         return redirect(url_for('users.newUser', error="User not found."), 200)
 
     Db.activeUser(userid)
-    return redirect(url_for('users.login'))
+    return redirect(url_for('login'))
 
 @users.route('/api/user', methods=['GET'])
 @users.route('/api/user/edit', methods=['POST'])

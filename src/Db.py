@@ -1,9 +1,10 @@
 import os
+import secrets
 import sqlite3
 import uuid
 
 from flask import g, json
-
+from werkzeug.security import generate_password_hash, check_password_hash
 class Db:
     DATABASE = "customer.db"
 
@@ -71,6 +72,37 @@ class Db:
           #_cursor.execute('Delete from customers')
 
         db.commit()
+
+    @staticmethod
+    def seedAccount():
+        roleId = Db.seedRole()
+
+        users = Db.getCurrentUsers()
+        if not users:
+            fullname = 'Administrator'
+            email = 'admin@gmail.com'
+            password = os.getenv("ADMIN_PASSWORD")
+        
+            user = Db.getCurrentUser(email)
+            if not user:
+                salt = secrets.token_urlsafe(16)
+                hashed_password = generate_password_hash(password + salt)
+                userid = Db.createUser(fullname,email,salt,hashed_password)
+                if userid:
+                    Db.activeUser(userid)
+                    if roleId:
+                        Db.addUserInRoles(roleId,userid) 
+
+    @staticmethod
+    def seedRole():
+        id = None
+        roles = Db.getRoles()
+        if not roles:
+            roleName = 'Admin' 
+            description = 'An administrator role.'
+            active = 1
+            id = Db.createRole(roleName,description,active) 
+        return id     
 
     @staticmethod
     def SeedCustomers():  
