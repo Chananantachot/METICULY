@@ -17,7 +17,6 @@
   - Intergated spelling checking & auto correct email via external REST API 
 
 ## 🚀 Getting Started
-    ```bash
          git clone https://github.com/Chananantachot/METICULY.git 
          cd METICULY/src
          python3 -m venv .venv
@@ -25,8 +24,8 @@
          pip3 install -r requirement.txt
          ./start.sh
 
-  - Visit the site at https:// 127.0.0.1:5000/
-  - then open your new Terminal, then following instructions
+  ### Visit the site at https:// 127.0.0.1:5000/
+  - Login with
       User Name: admin@gmail.com
       Password:  @dmin!23456
         
