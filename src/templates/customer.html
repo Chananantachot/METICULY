@@ -124,7 +124,8 @@
         const original = input.val();
         checkGrammar(original).then(result => {
           if (result.length > 0) {
-            const suggestion = result[0].value;
+            let idx = Math.floor(Math.random() * (result.length - 0 + 1)) + 0;
+            const suggestion = result[idx].value;
             input.val(suggestion);
           }
         });
@@ -137,16 +138,13 @@
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
-      },
+      }
+      ,
       body: new URLSearchParams({
         text: text,
         language: "en-US"
       })
     });
-
-    function getRandomInt(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
 
     const data = await res.json();
     if (data.matches.length > 0)

@@ -7,8 +7,6 @@ from Db import Db
 from users import users
 from customers import customers
 
-import matplotlib
-
 from flask import (
     Flask, jsonify, make_response, url_for, render_template, request, redirect, g
 )
@@ -22,14 +20,12 @@ import click
 
 from datetime import timedelta
 
-matplotlib.use('Agg')
-
 app = Flask(__name__)
 app.register_blueprint(users)
 app.register_blueprint(customers)
 
 app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
-app.config["JWT_COOKIE_SECURE"] = False  # Set to False in development if not using HTTPS
+app.config["JWT_COOKIE_SECURE"] = True  # Set to False in development if not using HTTPS
 app.config['JWT_ACCESS_COOKIE_NAME'] = 'access_token_cookie' 
 app.config['JWT_ACCESS_COOKIE_PATH'] = '/'
 app.config['JWT_REFRESH_COOKIE_PATH'] = '/token/refresh'
@@ -42,15 +38,14 @@ jwt = JWTManager(app)
 @click.command(name='seed')
 @with_appcontext
 def seed():
+    Db.init_db()
     Db.seedAccount()
     Db.SeedCustomers()
     print("Database seeded!")
  
-
 def register_commands(app):
     app.cli.add_command(seed)
 
-# Call this in your create_app()
 register_commands(app)
 
 @app.teardown_appcontext
@@ -61,8 +56,7 @@ def close_connection(exception):
 
 @app.before_request
 def before_request():
-    Db.init_db()
-    if request.endpoint in ['user', 'roles','users.newUser','users.register', 'users.signin','login','users.activateUser','static']:
+    if request.endpoint in ['spellChecker.correct_name', 'user', 'roles','newUser','users.register', 'users.signin','login','users.activateUser','static']:
         return
     try:
         verify_jwt_in_request()
@@ -125,7 +119,7 @@ def getUserRoles():
 @app.route("/api/machines/health")
 @app.route("/")
 @jwt_required()
-def homepage():  
+def home():  
     current_user = get_jwt_identity() 
     roles = get_jwt()["roles"]  
 
@@ -136,7 +130,14 @@ def homepage():
         'isAdminRole': isAdminRole
     }
     return render_template('home.html',current_user = user)
-    
+
+
+@app.route('/register', methods=['GET'])
+def newUser():
+    userid = request.args.get('userid')
+    email = request.args.get('email')
+    return render_template('register.html', userid = userid, existedUser = email)
+
 @app.route('/signin', methods=['GET'])
 def login():
     error = request.args.get('error','')
@@ -149,13 +150,13 @@ def get_page(data, page_number, page_size):
 
 @jwt.expired_token_loader
 def expired_token_callback(jwt_header, jwt_payload):
-    response = make_response(redirect(request.args.get("next") or url_for("homepage")))
+    response = make_response(redirect(request.args.get("next") or url_for("home")))
     unset_jwt_cookies(response)
     return response, 401
 
 @jwt.unauthorized_loader
 def missing_token_callback(err):
-    response = make_response(redirect(request.args.get("next") or url_for("homepage")))
+    response = make_response(redirect(request.args.get("next") or url_for("home")))
     unset_jwt_cookies(response)
     return response, 401
 

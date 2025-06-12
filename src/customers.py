@@ -18,6 +18,7 @@ def getCustomers():
     return jsonify(customers),200
 
 @customers.route('/api/customer/<id>', methods=['GET'])
+@jwt_required()
 def getCustomer(id):
     result = Db.getCustomer(id)
     customer = dict(result)

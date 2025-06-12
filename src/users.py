@@ -8,6 +8,7 @@ from flask_jwt_extended import (
     get_jwt_identity, set_access_cookies, unset_jwt_cookies
 )
 
+
 from flask_jwt_extended.exceptions import NoAuthorizationError
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -48,17 +49,11 @@ def signin():
     access_token = create_access_token(identity=user['fullname'], additional_claims={"roles": user['roles']})
     refresh_token = create_refresh_token(identity=user['fullname'], additional_claims={"jti": str(uuid.uuid4()), "roles": user['roles']})
     # Set the tokens in cookies
-    response = make_response(redirect(request.args.get("next") or url_for("homepage")))
+    response = make_response(redirect(request.args.get("next") or url_for("home")))
     _set_jwt_cookies(response, 'access_token_cookie', access_token)
     _set_jwt_cookies(response, 'refresh_token_cookie', refresh_token)
 
     return response
-
-@users.route('/register', methods=['GET'])
-def newUser():
-    userid = request.args.get('userid')
-    email = request.args.get('email')
-    return render_template('register.html', userid = userid, existedUser = email)
 
 @users.route('/register', methods=['POST'])
 def register():
@@ -67,7 +62,7 @@ def register():
     password = request.form['password']
    
     if not fullname or not email or not password:
-        return redirect(url_for('users.newUser', error="Please fill in all fields."),200)
+        return redirect(url_for('newUser', error="Please fill in all fields."),200)
 
     user = Db.getCurrentUser(email)
     if not user:
@@ -75,19 +70,19 @@ def register():
       hashed_password = generate_password_hash(password + salt)
       userid = Db.createUser(fullname,email,salt,hashed_password)
     else:
-        return redirect(url_for('users.newUser',userid = None ,email=email))   
+        return redirect(url_for('newUser',userid = None ,email=email))   
 
-    return redirect(url_for('users.newUser',userid = userid ,email=None))
+    return redirect(url_for('newUser',userid = userid ,email=None))
 
 @users.route('/active', methods=['POST'])
 def activateUser():
     userid = request.form['userid']
     if not userid:
-        return redirect(url_for('users.newUser', error="Sorry, We can't find this user in the system."),200)
+        return redirect(url_for('newUser', error="Sorry, We can't find this user in the system."),200)
 
     user = Db.getCurrentUser(userid)
     if not user:
-        return redirect(url_for('users.newUser', error="User not found."), 200)
+        return redirect(url_for('newUser', error="User not found."), 200)
 
     Db.activeUser(userid)
     return redirect(url_for('login'))
@@ -192,7 +187,7 @@ def refresh():
     identity = get_jwt_identity()
     access_token = create_access_token(identity=identity, additional_claims={"roles": roles})
     refresh_token = create_refresh_token(identity=identity, additional_claims={"jti": str(uuid.uuid4()), "roles": roles})
-    response = make_response(redirect(request.args.get("next") or url_for("homepage")))
+    response = make_response(redirect(request.args.get("next") or url_for("home")))
     set_access_cookies(response, access_token)
     set_access_cookies(response, refresh_token)
     return response

@@ -68,9 +68,6 @@ class Db:
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP                    
             )
         ''')
-
-          #_cursor.execute('Delete from customers')
-
         db.commit()
 
     @staticmethod
