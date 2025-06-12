@@ -74,7 +74,7 @@ class Db:
     def seedAccount():
         roleId = Db.seedRole()
 
-        users = Db.getCurrentUsers()
+        users = Db.getCurrentActiveUser('admin@gmail.com')
         if not users:
             fullname = 'Administrator'
             email = 'admin@gmail.com'
@@ -93,7 +93,7 @@ class Db:
     @staticmethod
     def seedRole():
         id = None
-        roles = Db.getRoles()
+        roles = Db.getRole('Admin')
         if not roles:
             roleName = 'Admin' 
             description = 'An administrator role.'
@@ -103,11 +103,13 @@ class Db:
 
     @staticmethod
     def SeedCustomers():  
-        data_path = os.path.join("static", "data", "MOCK_DATA.json")
-        with open(data_path, "r") as f:
-            customers = json.load(f)
-            for cust in customers:
-                Db.createCustomer(cust['first_name'], cust['last_name'], cust['email'], cust['mobile'])
+        customers = Db.getCustomers()
+        if not customers:  
+            data_path = os.path.join("static", "data", "MOCK_DATA.json")
+            with open(data_path, "r") as f:
+                customers = json.load(f)
+                for cust in customers:
+                    Db.createCustomer(cust['first_name'], cust['last_name'], cust['email'], cust['mobile'])
 
     @staticmethod
     def getCustomers():
@@ -254,6 +256,20 @@ class Db:
         roles = cursor.fetchall()
         return roles
     
+    @staticmethod
+    def getRole(roleName):
+        db = Db.get_db()
+        cursor = db.cursor()
+        if roleName:
+            cursor.execute(f''' SELECT id,roleName,
+                            description,active,
+                            created_at,updated_at
+                            FROM roles 
+                            WHERE roleName = ? and active = 1
+                        ''', (roleName,))
+            return cursor.fetchone()
+        return None
+
     @staticmethod
     def getRoles(id = None):
         db = Db.get_db()
