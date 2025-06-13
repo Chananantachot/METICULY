@@ -115,8 +115,6 @@ def getUserRoles():
 
     return jsonify(user), 200
 
-@app.route('/api/machines/download_csv')
-@app.route("/api/machines/health")
 @app.route("/")
 @jwt_required()
 def home():  
